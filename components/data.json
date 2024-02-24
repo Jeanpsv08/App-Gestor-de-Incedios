@@ -1,0 +1,20 @@
+{
+    "data": [
+      {
+        "correo": "jean@gmail.com",
+        "nombre": "Jean Sango",
+        "contraseña": "0000"
+      },
+      {
+        "correo": "david@gmail.com",
+        "nombre": "David Santos",
+        "contraseña": "1111"
+      },
+      {
+        "correo": "joan@gmail.com",
+        "nombre": "Joan Martínez",
+        "contraseña": "222"
+      }
+    ]
+  }
+  
