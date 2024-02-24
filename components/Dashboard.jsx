@@ -9,21 +9,45 @@ const Dashboard = ({ navigation }) => {
     const [temperature2, setTemperature2] = useState(0);
     const [smokeLevel3, setSmokeLevel3] = useState(0);
     const [temperature3, setTemperature3] = useState(0);
+    const [isMounted, setIsMounted] = useState(true);
 
-    const [data, setData] = useState(null);
+    // Configura la URL de la API y el token de autorización
+    const url = 'https://backend.thinger.io/v3/users/Grupo3IoT/devices/Esp32/resources/DataSensors';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg4MDg2MjMsImlhdCI6MTcwODgwMTQyMywicm9sZSI6InVzZXIiLCJ1c3IiOiJHcnVwbzNJb1QifQ.UkPAMI875O_ILmFW874VmzVX6PnE_p8ASW6rbvl52xU';
+
+
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            const randomSmokeLevel = Math.floor(Math.random() * 101);
-            const randomTemperature = Math.floor(Math.random() * 51) + 20;
-            setSmokeLevel1(randomSmokeLevel);
-            setTemperature1(randomTemperature);
-        }, 5000);
+        const fetchData = async () => {
+            try {
+                const config = {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                };
+
+                const response = await axios.get(url, config);
+                console.log('Respuesta de la API:', response.data);
+                if (isMounted) { // Verificar si el componente está montado antes de actualizar el estado
+                    setSmokeLevel1(response.data.Humo1*450/1200);
+                    setTemperature1(parseFloat(response.data.Temperatura1).toFixed(2));
+                    setSmokeLevel2(response.data.Humo2*450/1100);
+                    setTemperature2(parseFloat(response.data.Temperatura2).toFixed(2));
+                    setSmokeLevel3(response.data.Humo3*450/470);
+                    setTemperature3(parseFloat(response.data.Temperatura3).toFixed(2));
+                }
+            } catch (error) {
+                console.error('Error al hacer la solicitud:', error);
+            }
+        };
+
+        const interval = setInterval(fetchData, 2000);
 
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
+
+/*    useEffect(() => {
         const interval = setInterval(() => {
             const randomSmokeLevel = Math.floor(Math.random() * 101);
             const randomTemperature = Math.floor(Math.random() * 51) + 20;
@@ -44,7 +68,7 @@ const Dashboard = ({ navigation }) => {
 
         return () => clearInterval(interval);
     }, []);
-    
+*/
     useEffect(() => {
         const removeListener = navigation.addListener('beforeRemove', (e) => {
             e.preventDefault();
@@ -59,7 +83,8 @@ const Dashboard = ({ navigation }) => {
                     {
                         text: 'Sí',
                         onPress: () => {
-                            removeListener(); 
+                            
+                            removeListener();
                             navigation.navigate('Login');
                         },
                     },
@@ -67,19 +92,17 @@ const Dashboard = ({ navigation }) => {
                 { cancelable: false }
             );
         });
-    
+
         // Retornar la función de limpieza del oyente
         return removeListener;
     }, [navigation]); // Asegúrate de incluir 'navigation' como una dependencia del efecto.
-    
+
 
     const getMessage = (smokeLevel, temperature) => {
-        if (smokeLevel > 50 && temperature > 30) {
+        if (smokeLevel >= 430) {
             return '¡Peligro! Altos niveles de humo y temperatura';
-        } else if (smokeLevel > 50) {
+        } else if (smokeLevel >= 400 && smokeLevel < 430) {
             return '¡Alerta! Alto nivel de humo';
-        } else if (temperature > 30) {
-            return '¡Alerta! Alta temperatura';
         } else {
             return 'Todo en orden';
         }
@@ -88,7 +111,7 @@ const Dashboard = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Sección 1</Text>
+                <Text style={styles.sectionTitle}>Zona 1</Text>
                 <View style={styles.box}>
                     <Text style={styles.text}>Nivel de Humo:</Text>
                     <Text style={styles.text}>{smokeLevel1}</Text>
@@ -103,7 +126,7 @@ const Dashboard = ({ navigation }) => {
             </View>
 
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Sección 2</Text>
+                <Text style={styles.sectionTitle}>Zona 2</Text>
                 <View style={styles.box}>
                     <Text style={styles.text}>Nivel de Humo:</Text>
                     <Text style={styles.text}>{smokeLevel2}</Text>
@@ -118,7 +141,7 @@ const Dashboard = ({ navigation }) => {
             </View>
 
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Sección 3</Text>
+                <Text style={styles.sectionTitle}>Zona 3</Text>
                 <View style={styles.box}>
                     <Text style={styles.text}>Nivel de Humo:</Text>
                     <Text style={styles.text}>{smokeLevel3}</Text>
@@ -136,12 +159,12 @@ const Dashboard = ({ navigation }) => {
 };
 
 const getMessageBackgroundColor = (smokeLevel, temperature) => {
-    if (smokeLevel > 50 && temperature > 30) {
-        return 'red'; // Peligro
-    } else if (smokeLevel > 50 || temperature > 30) {
-        return 'orange'; // Alerta
+    if (smokeLevel >= 450) {
+        return 'red';
+    } else if (smokeLevel >= 400 && smokeLevel < 450) {
+        return 'orange';
     } else {
-        return 'green'; // Todo en orden
+        return 'green';
     }
 };
 
@@ -181,6 +204,6 @@ const styles = StyleSheet.create({
     text: {
         color: '#ffffff'
     },
-    });
-    
-    export default Dashboard;
+});
+
+export default Dashboard;
