@@ -13,7 +13,7 @@ const Dashboard = ({ navigation }) => {
 
     // Configura la URL de la API y el token de autorización
     const url = 'https://backend.thinger.io/v3/users/Grupo3IoT/devices/Esp32/resources/DataSensors';
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg4MDg2MjMsImlhdCI6MTcwODgwMTQyMywicm9sZSI6InVzZXIiLCJ1c3IiOiJHcnVwbzNJb1QifQ.UkPAMI875O_ILmFW874VmzVX6PnE_p8ASW6rbvl52xU';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDk2NjE4NDcsImlhdCI6MTcwOTY1NDY0Nywicm9sZSI6InVzZXIiLCJ1c3IiOiJHcnVwbzNJb1QifQ.KQcFejXNmOHcsuvECvc_hFD53RO_hPyEdFgoPOcvTDU';
 
 
 
@@ -29,11 +29,11 @@ const Dashboard = ({ navigation }) => {
                 const response = await axios.get(url, config);
                 console.log('Respuesta de la API:', response.data);
                 if (isMounted) { // Verificar si el componente está montado antes de actualizar el estado
-                    setSmokeLevel1(response.data.Humo1*450/1200);
+                    setSmokeLevel1(response.data.Humo1);
                     setTemperature1(parseFloat(response.data.Temperatura1).toFixed(2));
-                    setSmokeLevel2(response.data.Humo2*450/1100);
+                    setSmokeLevel2(response.data.Humo2);
                     setTemperature2(parseFloat(response.data.Temperatura2).toFixed(2));
-                    setSmokeLevel3(response.data.Humo3*450/470);
+                    setSmokeLevel3(response.data.Humo3);
                     setTemperature3(parseFloat(response.data.Temperatura3).toFixed(2));
                 }
             } catch (error) {
@@ -99,9 +99,9 @@ const Dashboard = ({ navigation }) => {
 
 
     const getMessage = (smokeLevel, temperature) => {
-        if (smokeLevel >= 430) {
+        if (smokeLevel >= 470) {
             return '¡Peligro! Altos niveles de humo y temperatura';
-        } else if (smokeLevel >= 400 && smokeLevel < 430) {
+        } else if (smokeLevel >= 400 && smokeLevel < 470) {
             return '¡Alerta! Alto nivel de humo';
         } else {
             return 'Todo en orden';
@@ -159,9 +159,9 @@ const Dashboard = ({ navigation }) => {
 };
 
 const getMessageBackgroundColor = (smokeLevel, temperature) => {
-    if (smokeLevel >= 450) {
+    if (smokeLevel >= 470) {
         return 'red';
-    } else if (smokeLevel >= 400 && smokeLevel < 450) {
+    } else if (smokeLevel >= 400 && smokeLevel < 470) {
         return 'orange';
     } else {
         return 'green';
